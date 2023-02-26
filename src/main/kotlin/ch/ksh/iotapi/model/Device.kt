@@ -13,25 +13,25 @@ data class Device(
     @NotNull
     @RequestParam("deviceUUID")
     @JsonAlias("deviceUUID")
-    private var deviceUUID : String = UUID.randomUUID().toString(),
+    var deviceUUID : String = UUID.randomUUID().toString(),
     @Getter
     @Setter
     @NotNull
     @RequestParam("deviceName")
     @JsonAlias("deviceName")
-    private var deviceName : String = "Unknown",
+    var deviceName : String = "unknown",
     @Getter
     @Setter
     @NotNull
     @RequestParam("latitude")
     @JsonAlias("latitude")
-    private var latitude : Float = 0f,
+    var latitude : Float,
     @Getter
     @Setter
     @NotNull
     @RequestParam("longitude")
     @JsonAlias("longitude")
-    private var longitude : Float = 0f
+    var longitude : Float
 ) {
     //TODO
 }
