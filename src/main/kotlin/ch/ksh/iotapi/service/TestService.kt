@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController
 class TestService {
     @GetMapping("/test")
     fun testMessage(): String {
-        return "This is a test message."
+        return "This is a test response."
     }
 }
