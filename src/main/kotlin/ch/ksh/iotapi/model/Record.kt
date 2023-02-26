@@ -26,25 +26,25 @@ data class Record(
     @NotNull
     @RequestParam("timestamp")
     @JsonAlias("timestamp")
-    var timestamp : LocalDateTime = LocalDateTime.now(),
+    var timestamp : LocalDateTime?,
     @Getter
     @Setter
     @NotNull
     @RequestParam("temperature")
     @JsonAlias("temperature")
-    var temperature : Float,
+    var temperature : Float?,
     @Getter
     @Setter
     @NotNull
     @RequestParam("humidity")
     @JsonAlias("humidity")
-    var humidity : Float,
+    var humidity : Float?,
     @Getter
     @Setter
     @NotNull
     @RequestParam("batteryv")
     @JsonAlias("batteryv")
-    var batteryv : Float
+    var batteryv : Float?
 ) {
     //TODO
 }
