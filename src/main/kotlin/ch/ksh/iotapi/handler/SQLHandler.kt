@@ -4,13 +4,6 @@ import java.sql.*
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
 
-/**
- * Handles some simple conversions and is able to execute most sql queries needed for this application
- *
- * @author pantherinblack
- * @version 1.3
- * @since 12.08.2022
- */
 class SQLHandler {
     companion object {
         private var connection: Connection = getConnection()
@@ -24,13 +17,6 @@ class SQLHandler {
             return connection
         }
 
-        /**
-         * Returns the PreparedStatement for the sql-query
-         *
-         * @param sql to be executed
-         * @return PreparedStatement
-         * @throws SQLException if the connection or the execution fails
-         */
         @Throws(SQLException::class)
         private fun getPreparedStatement(sql: String): PreparedStatement {
             return getConnection().prepareStatement(sql)
