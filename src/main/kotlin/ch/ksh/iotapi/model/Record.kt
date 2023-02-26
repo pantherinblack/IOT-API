@@ -14,37 +14,37 @@ data class Record(
     @NotNull
     @RequestParam("recordUUID")
     @JsonAlias("recordUUID")
-    private var recordUUID : String = UUID.randomUUID().toString(),
+    var recordUUID : String = UUID.randomUUID().toString(),
     @Getter
     @Setter
     @NotNull
     @RequestParam("deviceUUID")
     @JsonAlias("deviceUUID")
-    private var deviceUUID : String = "",
+    var deviceUUID : String,
     @Getter
     @Setter
     @NotNull
     @RequestParam("timestamp")
     @JsonAlias("timestamp")
-    private var timestamp : LocalDateTime = LocalDateTime.now(),
+    var timestamp : LocalDateTime = LocalDateTime.now(),
     @Getter
     @Setter
     @NotNull
     @RequestParam("temperature")
     @JsonAlias("temperature")
-    private var temperature : Float = 0f,
+    var temperature : Float,
     @Getter
     @Setter
     @NotNull
     @RequestParam("humidity")
     @JsonAlias("humidity")
-    private var humidity : Float = 0f,
+    var humidity : Float,
     @Getter
     @Setter
     @NotNull
     @RequestParam("batteryv")
     @JsonAlias("batteryv")
-    private var batteryv : Float = 0f
+    var batteryv : Float
 ) {
     //TODO
 }
