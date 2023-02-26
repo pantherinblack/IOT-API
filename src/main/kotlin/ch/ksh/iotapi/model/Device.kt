@@ -19,19 +19,19 @@ data class Device(
     @NotNull
     @RequestParam("deviceName")
     @JsonAlias("deviceName")
-    private var deviceName : String? = null,
+    private var deviceName : String = "Unknown",
     @Getter
     @Setter
     @NotNull
     @RequestParam("latitude")
     @JsonAlias("latitude")
-    private var latitude : Float? = null,
+    private var latitude : Float = 0f,
     @Getter
     @Setter
     @NotNull
     @RequestParam("longitude")
     @JsonAlias("longitude")
-    private var longitude : Float? = null
+    private var longitude : Float = 0f
 ) {
     //TODO
 }

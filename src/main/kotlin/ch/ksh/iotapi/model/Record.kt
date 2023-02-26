@@ -20,31 +20,31 @@ data class Record(
     @NotNull
     @RequestParam("deviceUUID")
     @JsonAlias("deviceUUID")
-    private var deviceUUID : String = UUID.randomUUID().toString(),
+    private var deviceUUID : String = "",
     @Getter
     @Setter
     @NotNull
     @RequestParam("timestamp")
     @JsonAlias("timestamp")
-    private var timestamp : LocalDateTime? = LocalDateTime.now(),
+    private var timestamp : LocalDateTime = LocalDateTime.now(),
     @Getter
     @Setter
     @NotNull
     @RequestParam("temperature")
     @JsonAlias("temperature")
-    private var temperature : Float? = null,
+    private var temperature : Float = 0f,
     @Getter
     @Setter
     @NotNull
     @RequestParam("humidity")
     @JsonAlias("humidity")
-    private var humidity : Float? = null,
+    private var humidity : Float = 0f,
     @Getter
     @Setter
     @NotNull
     @RequestParam("batteryv")
     @JsonAlias("batteryv")
-    private var batteryv : Float? = null
+    private var batteryv : Float = 0f
 ) {
     //TODO
 }
