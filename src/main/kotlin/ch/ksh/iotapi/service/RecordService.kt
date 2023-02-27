@@ -2,8 +2,8 @@ package ch.ksh.iotapi.service
 
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.handler.RecordHandler
-import ch.ksh.iotapi.model.Device
 import ch.ksh.iotapi.model.Record
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -13,13 +13,13 @@ class RecordService {
     @GetMapping("/list")
     fun listRecords(
         @RequestParam("time") time: Int?
-    ): ArrayList<Record> {
+    ): ResponseEntity<ArrayList<Record>> {
         if (time != null && time>0) {
             RecordHandler.getInstance().loadRecordList(time)
         } else {
             RecordHandler.getInstance().loadRecordList()
         }
-        return RecordHandler.getInstance().getRecordList()
+        return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordList())
     }
 
 
@@ -27,21 +27,21 @@ class RecordService {
     @RequestMapping("/get")
     fun getRecordByUUID(
         @RequestParam("uuid") uuid : String
-    ): Record {
-        return RecordHandler.getInstance().getRecordByUUID(uuid)!!
+    ): ResponseEntity<Record?>  {
+        return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
     }
 
     @ResponseBody
     @PostMapping("/insert")
     fun insertDevice(
         @RequestParam record: Record,
-        @RequestParam("latitude") latitude : Float,
-        @RequestParam("longitude") longitude : Float
-    ) {
+        @RequestParam("latitude") latitude : Float? = null,
+        @RequestParam("longitude") longitude : Float? = null
+    ): ResponseEntity<String?> {
 
         RecordHandler.getInstance().insertRecord(record)
         DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID, latitude = latitude, longitude = longitude)
-        return
+        return ResponseEntity.status(200).body(null)
     }
 }
 
