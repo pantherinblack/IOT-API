@@ -39,24 +39,28 @@ class DeviceHandler private constructor() {
     }
 
     fun insertDevice(device: Device) {
-        //TODO Insert into DB
+        val list = mapOf<Int, Any?>(1 to device.deviceUUID, 2 to device.deviceName, 3 to device.latitude, 4 to device.longitude)
+        SQLHandler.getResultSet("INSERT INTO Device (deviceUUID, deviceName, latitude, longitude) VALUES (?, ?, ?, ?)", list)
         deviceList.add(device)
     }
 
-    fun updateDevice(device: Device) {
-        //TODO Alter DB
-        val oldDevice = getDeviceByUUID(device.deviceUUID)
-        oldDevice?.deviceName = device.deviceName!!
-        oldDevice?.latitude = device.latitude!!
-        oldDevice?.longitude = device.longitude!!
-    }
-    fun updateDevice(uuid: String, device: Device) {
-        device.deviceUUID = uuid
-        updateDevice(device)
+    fun updateDevice(uuid: String, deviceUUID: String? = null, deviceName: String? = null, latitude: Float? = null, longitude: Float? = null) {
+        val list = mapOf<Int, Any?>(1 to deviceName, 2 to latitude, 3 to longitude, 4 to uuid)
+        SQLHandler.getResultSet("UPDATE Device SET deviceName = ?, latitude = ?, longitude = ? WHERE deviceUUID LIKE ?", list)
+        val device = getDeviceByUUID(uuid)!!
+        if (deviceUUID != null)
+            device.deviceUUID = deviceUUID
+        if (deviceName != null)
+            device.deviceName = deviceName
+        if (latitude != null)
+            device.latitude = latitude
+        if (longitude != null)
+            device.longitude = longitude
     }
 
     fun deleteDevice(uuid:String) {
-        //TODO Delete in DB
+        val list = mapOf<Int, Any>(1 to uuid)
+        SQLHandler.getResultSet("DELETE from Device where device UUID like ?",list)
         deviceList.remove(getDeviceByUUID(uuid))
     }
 }
