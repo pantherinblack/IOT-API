@@ -54,10 +54,15 @@ class RecordHandler {
         //TODO Insert into DB
         recordList.add(record)
         recordList.forEach {
-                record -> if (record.timestamp >= LocalDateTime.now().minusDays(1)) {
-                    softDeleteRecord(record)
-                }
+                record -> if (record.timestamp!! >= LocalDateTime.now().minusDays(1)) {
+            softDeleteRecord(record)
         }
+        }
+    }
+
+    fun updateRecord(uuid: String, record: Record) {
+        record.recordUUID = uuid
+        updateRecord(record)
     }
 
     fun updateRecord(record: Record) {
@@ -70,17 +75,13 @@ class RecordHandler {
         oldRecord?.batteryv = record.batteryv!!
     }
 
-    fun updateRecord(uuid: String, record: Record) {
-        record.recordUUID = uuid
-        updateRecord(record)
-    }
-
     fun softDeleteRecord(record: Record) {
         recordList.remove(record)
     }
 
     fun deleteRecord(uuid: String) {
-        //TODO Delete in DB
+        val list = mapOf<Int, Any>(1 to uuid)
+        SQLHandler.getResultSet("DELETE from Record where recordUUID like ?",list)
         recordList.remove(getRecordByUUID(uuid))
     }
 }
