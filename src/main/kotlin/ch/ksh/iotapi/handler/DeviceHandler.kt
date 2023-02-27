@@ -45,8 +45,6 @@ class DeviceHandler private constructor() {
     }
 
     fun updateDevice(uuid: String, deviceUUID: String? = null, deviceName: String? = null, latitude: Float? = null, longitude: Float? = null) {
-        val list = mapOf<Int, Any?>(1 to deviceName, 2 to latitude, 3 to longitude, 4 to uuid)
-        SQLHandler.getResultSet("UPDATE Device SET deviceName = ?, latitude = ?, longitude = ? WHERE deviceUUID LIKE ?", list)
         val device = getDeviceByUUID(uuid)!!
         if (deviceUUID != null)
             device.deviceUUID = deviceUUID
@@ -56,6 +54,8 @@ class DeviceHandler private constructor() {
             device.latitude = latitude
         if (longitude != null)
             device.longitude = longitude
+        val list = mapOf<Int, Any?>(1 to device.deviceName, 2 to device.latitude, 3 to device.longitude, 4 to uuid)
+        SQLHandler.getResultSet("UPDATE Device SET deviceName = ?, latitude = ?, longitude = ? WHERE deviceUUID LIKE ?", list)
     }
 
     fun deleteDevice(uuid:String) {

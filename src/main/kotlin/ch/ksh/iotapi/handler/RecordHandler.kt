@@ -2,6 +2,7 @@ package ch.ksh.iotapi.handler
 
 import ch.ksh.iotapi.model.Record
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.LocalDateTime
 
 class RecordHandler {
@@ -60,19 +61,22 @@ class RecordHandler {
         }
     }
 
-    fun updateRecord(uuid: String, record: Record) {
-        record.recordUUID = uuid
-        updateRecord(record)
-    }
+    fun updateRecord(uuid: String, deviceUUID: String? = null, timestamp: LocalDateTime? = null, temperature: Float? = null, humidity: Float? = null, batteryv: Float? = null) {
+        val record = getRecordByUUID(uuid)!!
+        if (deviceUUID != null)
+            record.deviceUUID = deviceUUID
+        if (timestamp != null)
+            record.timestamp = timestamp
+        if (temperature != null)
+            record.temperature = temperature
+        if (humidity != null)
+            record.humidity = humidity
+        if (batteryv != null)
+            record.batteryv = batteryv
+        val list = mapOf<Int, Any?>(1 to record.deviceUUID, 2 to record.timestamp, 3 to record.temperature, 4 to record.humidity, 5 to record.batteryv, 6 to uuid)
+        SQLHandler.getResultSet("UPDATE Record SET deviceUUID = ?, timestamp = ?, temperature = ?, humidity = ?, batteryv = ? WHERE recordUUID LIKE ?", list)
 
-    fun updateRecord(record: Record) {
-        //TODO Alter DB
-        val oldRecord = getRecordByUUID(record.recordUUID)
-        oldRecord?.deviceUUID = record.deviceUUID!!
-        oldRecord?.timestamp = record.timestamp!!
-        oldRecord?.temperature = record.temperature!!
-        oldRecord?.humidity = record.humidity!!
-        oldRecord?.batteryv = record.batteryv!!
+
     }
 
     fun softDeleteRecord(record: Record) {
