@@ -54,8 +54,18 @@ class RecordService {
         @RequestParam("temperature") temperature : Float? = null,
         @RequestParam("humidity") humidity : Float? = null,
         @RequestParam("batteryv") batteryv : Float? = null,
-    ) {
-        //TODO Update
+    ): ResponseEntity<String?> {
+        RecordHandler.getInstance().updateRecord(recordUUID, deviceUUID, timestamp, temperature, humidity, batteryv)
+        return ResponseEntity.status(200).body(null)
+    }
+
+    @ResponseBody
+    @DeleteMapping("/delete")
+    fun deleteRecord(
+        @RequestParam("recordUUID") recordUUID: String
+    ): ResponseEntity<String?> {
+        RecordHandler.getInstance().deleteRecord(recordUUID)
+        return ResponseEntity.status(200).body(null)
     }
 }
 

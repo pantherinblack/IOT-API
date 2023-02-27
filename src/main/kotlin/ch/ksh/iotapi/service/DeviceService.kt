@@ -3,6 +3,7 @@ package ch.ksh.iotapi.service
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.model.Device
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -46,6 +47,15 @@ class DeviceService {
         @RequestParam("longitude") longitude: Float? = null
     ): ResponseEntity<String?> {
         DeviceHandler.getInstance().updateDevice(uuid = deviceUUID, deviceName = deviceName, latitude = latitude, longitude = longitude)
+        return ResponseEntity.status(200).body(null)
+    }
+
+    @ResponseBody
+    @DeleteMapping("/delete")
+    fun deleteDevice(
+        @RequestParam("deviceUUID") deviceUUID: String
+    ): ResponseEntity<String?> {
+        DeviceHandler.getInstance().deleteDevice(uuid = deviceUUID)
         return ResponseEntity.status(200).body(null)
     }
 }
