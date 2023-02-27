@@ -1,5 +1,6 @@
 package ch.ksh.iotapi.handler
 
+import ch.ksh.iotapi.util.ConfigReader
 import java.sql.*
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
@@ -12,7 +13,10 @@ class SQLHandler {
         @Throws(SQLException::class)
         fun getConnection(): Connection {
             if (connection.isClosed || !connection.isValid(2)) {
-                connection = DriverManager.getConnection("resource", "user", "pw")
+                connection = DriverManager.getConnection(
+                    ConfigReader.readConfig("jdbcURL"),
+                    ConfigReader.readConfig("dbUser"),
+                    ConfigReader.readConfig("dbPassword"))
             }
             return connection
         }
