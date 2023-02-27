@@ -2,7 +2,6 @@ package ch.ksh.iotapi.handler
 
 import ch.ksh.iotapi.model.Record
 import java.sql.ResultSet
-import java.sql.Timestamp
 import java.time.LocalDateTime
 
 class RecordHandler {
@@ -24,7 +23,7 @@ class RecordHandler {
 
     fun loadRecordList() {
         val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL 1 DAY) ORDER BY timestamp DESC")
-        rs!!.next();
+        rs!!.next()
         if (rs.getInt(1) != recordList.size) {
             loadRecordList(1)
         }
@@ -52,7 +51,8 @@ class RecordHandler {
     }
 
     fun insertRecord(record: Record) {
-        //TODO Insert into DB
+        val list = mapOf<Int, Any?>(1 to record.recordUUID, 2 to record.deviceUUID, 3 to record.timestamp, 4 to record.temperature, 5 to record.humidity, 6 to record.batteryv)
+        SQLHandler.getResultSet("INSERT INTO Device (recordUUID, deviceUUID, timestamp, temperature, humidity, batteryv) VALUES (?, ?, ?, ?, ?, ?)", list)
         recordList.add(record)
         recordList.forEach {
                 record -> if (record.timestamp!! >= LocalDateTime.now().minusDays(1)) {
