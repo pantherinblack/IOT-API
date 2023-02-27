@@ -5,6 +5,7 @@ import ch.ksh.iotapi.handler.RecordHandler
 import ch.ksh.iotapi.model.Record
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/record")
@@ -33,7 +34,7 @@ class RecordService {
 
     @ResponseBody
     @PostMapping("/insert")
-    fun insertDevice(
+    fun insertRecord(
         @RequestParam record: Record,
         @RequestParam("latitude") latitude : Float? = null,
         @RequestParam("longitude") longitude : Float? = null
@@ -42,6 +43,19 @@ class RecordService {
         RecordHandler.getInstance().insertRecord(record)
         DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID, latitude = latitude, longitude = longitude)
         return ResponseEntity.status(200).body(null)
+    }
+
+    @ResponseBody
+    @PutMapping("/update")
+    fun updateRecord(
+        @RequestParam("recordUUID") recordUUID : String,
+        @RequestParam("deviceUUID") deviceUUID : String? = null,
+        @RequestParam("timestamp") timestamp : LocalDateTime? = null,
+        @RequestParam("temperature") temperature : Float? = null,
+        @RequestParam("humidity") humidity : Float? = null,
+        @RequestParam("batteryv") batteryv : Float? = null,
+    ) {
+        //TODO Update
     }
 }
 
