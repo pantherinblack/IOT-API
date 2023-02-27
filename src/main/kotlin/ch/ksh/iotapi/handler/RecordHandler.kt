@@ -1,8 +1,8 @@
 package ch.ksh.iotapi.handler
 
-import ch.ksh.iotapi.model.Device
 import ch.ksh.iotapi.model.Record
 import java.sql.ResultSet
+import java.time.LocalDateTime
 
 class RecordHandler {
     private var recordList : ArrayList<Record> = ArrayList()
@@ -21,11 +21,25 @@ class RecordHandler {
         loadRecordList()
     }
 
-    private fun loadRecordList() {
-        val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record")
+    fun loadRecordList() {
+        val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL 1 DAY) ORDER BY timestamp DESC")
+        rs!!.next();
+        if (rs.getInt(1) != recordList.size) {
+            loadRecordList(1)
+        }
+
+    }
+
+    fun loadRecordList(hours: Int) {
+        val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL "+hours+" DAY) ORDER BY timestamp DESC")
         while (rs!!.next()) {
             recordList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
         }
+        SQLHandler.sqlClose()
+    }
+
+    fun getRecordList(): ArrayList<Record> {
+        return recordList
     }
 
     fun getRecordByUUID(uuid:String) : Record? {
@@ -39,6 +53,11 @@ class RecordHandler {
     fun insertRecord(record: Record) {
         //TODO Insert into DB
         recordList.add(record)
+        recordList.forEach {
+                record -> if (record.timestamp >= LocalDateTime.now().minusDays(1)) {
+                    softDeleteRecord(record)
+                }
+        }
     }
 
     fun updateRecord(record: Record) {
@@ -54,6 +73,10 @@ class RecordHandler {
     fun updateRecord(uuid: String, record: Record) {
         record.recordUUID = uuid
         updateRecord(record)
+    }
+
+    fun softDeleteRecord(record: Record) {
+        recordList.remove(record)
     }
 
     fun deleteRecord(uuid: String) {
