@@ -26,7 +26,7 @@ class SQLHandler {
             return getResultSet(sql, null)
         }
 
-        fun getResultSet(sql: String, elements: Map<Int, Any>?): ResultSet? {
+        fun getResultSet(sql: String, elements: Map<Int, Any?>?): ResultSet? {
             return try {
                 val ps: PreparedStatement = getPreparedStatement(sql)
                 if (elements != null) {
