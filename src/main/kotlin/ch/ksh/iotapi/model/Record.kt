@@ -1,5 +1,6 @@
 package ch.ksh.iotapi.model
 
+import ch.ksh.iotapi.handler.DeviceHandler
 import com.fasterxml.jackson.annotation.JsonAlias
 import lombok.Getter
 import lombok.Setter
@@ -46,5 +47,6 @@ data class Record(
     @JsonAlias("batteryv")
     var batteryv : Float?
 ) {
-    //TODO
+    var device: Device? = DeviceHandler.getInstance().getDeviceByUUID(deviceUUID)
+
 }
