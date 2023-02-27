@@ -23,7 +23,7 @@ class RecordHandler {
 
     fun loadRecordList() {
         val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL 1 DAY) ORDER BY timestamp DESC")
-        rs!!.next();
+        rs!!.next()
         if (rs.getInt(1) != recordList.size) {
             loadRecordList(1)
         }
@@ -51,7 +51,8 @@ class RecordHandler {
     }
 
     fun insertRecord(record: Record) {
-        //TODO Insert into DB
+        val list = mapOf<Int, Any?>(1 to record.recordUUID, 2 to record.deviceUUID, 3 to record.timestamp, 4 to record.temperature, 5 to record.humidity, 6 to record.batteryv)
+        SQLHandler.getResultSet("INSERT INTO Device (recordUUID, deviceUUID, timestamp, temperature, humidity, batteryv) VALUES (?, ?, ?, ?, ?, ?)", list)
         recordList.add(record)
         recordList.forEach {
                 record -> if (record.timestamp!! >= LocalDateTime.now().minusDays(1)) {
@@ -60,19 +61,22 @@ class RecordHandler {
         }
     }
 
-    fun updateRecord(uuid: String, record: Record) {
-        record.recordUUID = uuid
-        updateRecord(record)
-    }
+    fun updateRecord(uuid: String, deviceUUID: String? = null, timestamp: LocalDateTime? = null, temperature: Float? = null, humidity: Float? = null, batteryv: Float? = null) {
+        val record = getRecordByUUID(uuid)!!
+        if (deviceUUID != null)
+            record.deviceUUID = deviceUUID
+        if (timestamp != null)
+            record.timestamp = timestamp
+        if (temperature != null)
+            record.temperature = temperature
+        if (humidity != null)
+            record.humidity = humidity
+        if (batteryv != null)
+            record.batteryv = batteryv
+        val list = mapOf<Int, Any?>(1 to record.deviceUUID, 2 to record.timestamp, 3 to record.temperature, 4 to record.humidity, 5 to record.batteryv, 6 to uuid)
+        SQLHandler.getResultSet("UPDATE Record SET deviceUUID = ?, timestamp = ?, temperature = ?, humidity = ?, batteryv = ? WHERE recordUUID LIKE ?", list)
 
-    fun updateRecord(record: Record) {
-        //TODO Alter DB
-        val oldRecord = getRecordByUUID(record.recordUUID)
-        oldRecord?.deviceUUID = record.deviceUUID!!
-        oldRecord?.timestamp = record.timestamp!!
-        oldRecord?.temperature = record.temperature!!
-        oldRecord?.humidity = record.humidity!!
-        oldRecord?.batteryv = record.batteryv!!
+
     }
 
     fun softDeleteRecord(record: Record) {
