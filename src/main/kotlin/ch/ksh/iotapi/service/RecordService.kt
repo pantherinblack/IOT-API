@@ -41,7 +41,7 @@ class RecordService {
     ): ResponseEntity<String?> {
 
         RecordHandler.getInstance().insertRecord(record)
-        DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID, latitude = latitude, longitude = longitude)
+        DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID!!, latitude = latitude, longitude = longitude)
         return ResponseEntity.status(200).body(null)
     }
 

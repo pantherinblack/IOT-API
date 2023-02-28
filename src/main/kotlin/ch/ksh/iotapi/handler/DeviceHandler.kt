@@ -20,10 +20,8 @@ class DeviceHandler private constructor() {
     }
 
     fun loadDeviceList() {
-        val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Device")
-        while (rs!!.next()) {
-            deviceList = SQLHandler.resultSetToArrayList(rs,Device::class.java)
-        }
+        val rs : ResultSet = SQLHandler.getResultSet("SELECT * FROM Device")
+        deviceList = SQLHandler.resultSetToArrayList(rs,Device::class.java)
     }
 
     fun getDeviceList() : ArrayList<Device> {

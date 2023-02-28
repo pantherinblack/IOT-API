@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull
 import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
-data class Device(
+data class Device constructor(
     @Getter
     @Setter
     @NotNull
@@ -19,19 +19,19 @@ data class Device(
     @NotNull
     @RequestParam("deviceName")
     @JsonAlias("deviceName")
-    var deviceName : String?,
+    var deviceName : String? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("latitude")
     @JsonAlias("latitude")
-    var latitude : Float?,
+    var latitude : Float? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("longitude")
     @JsonAlias("longitude")
-    var longitude : Float?
+    var longitude : Float? = null
 ) {
     //TODO
 }

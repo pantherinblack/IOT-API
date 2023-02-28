@@ -31,10 +31,8 @@ class RecordHandler {
     }
 
     fun loadRecordList(hours: Int) {
-        val rs : ResultSet? = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL "+hours+" DAY) ORDER BY timestamp DESC")
-        while (rs!!.next()) {
-            recordList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
-        }
+        val rs : ResultSet = SQLHandler.getResultSet("SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL "+hours+" DAY) ORDER BY timestamp DESC")
+        recordList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
         SQLHandler.sqlClose()
     }
 

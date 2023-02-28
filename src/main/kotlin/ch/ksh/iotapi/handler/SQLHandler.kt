@@ -7,18 +7,19 @@ import kotlin.reflect.KClass
 
 class SQLHandler {
     companion object {
-        private var connection: Connection = getConnection()
+        private var connection: Connection? = null
         private var rs: ResultSet? = null
 
         @Throws(SQLException::class)
         fun getConnection(): Connection {
-            if (connection.isClosed || !connection.isValid(2)) {
+            if (connection==null || connection!!.isClosed || !connection!!.isValid(2)) {
                 connection = DriverManager.getConnection(
                     ConfigReader.readConfig("jdbcURL"),
                     ConfigReader.readConfig("dbUser"),
                     ConfigReader.readConfig("dbPassword"))
+                getConnection()
             }
-            return connection
+            return connection!!
         }
 
         @Throws(SQLException::class)
@@ -26,37 +27,41 @@ class SQLHandler {
             return getConnection().prepareStatement(sql)
         }
 
-        fun getResultSet(sql: String): ResultSet? {
+        fun getResultSet(sql: String): ResultSet {
             return getResultSet(sql, null)
         }
 
-        fun getResultSet(sql: String, elements: Map<Int, Any?>?): ResultSet? {
-            return try {
-                val ps: PreparedStatement = getPreparedStatement(sql)
-                if (elements != null) {
-                    for (i in 1..elements.size) {
-                        val aClass: Class<*> = elements[i]!!.javaClass
-                        if (Int::javaClass == aClass) {
-                            ps.setInt(i, elements[i] as Int)
-                        } else if (LocalDateTime::javaClass == aClass) {
-                            ps.setTimestamp(i, Timestamp.valueOf(elements[i] as LocalDateTime?))
-                        } else if (Float::javaClass == aClass) {
-                            ps.setFloat(i, elements[i] as Float)
-                        } else {
-                            ps.setString(i, elements[i].toString())
+        fun getResultSet(sql: String, elements: Map<Int, Any?>?): ResultSet {
+            if (getConnection().isValid(2)) {
+                try {
+                    val ps: PreparedStatement = getPreparedStatement(sql)
+                    if (elements != null) {
+                        for (i in 1..elements.size) {
+                            val aClass: Class<*> = elements[i]!!.javaClass
+                            if (Int::javaClass == aClass) {
+                                ps.setInt(i, elements[i] as Int)
+                            } else if (LocalDateTime::javaClass == aClass) {
+                                ps.setTimestamp(i, Timestamp.valueOf(elements[i] as LocalDateTime?))
+                            } else if (Float::javaClass == aClass) {
+                                ps.setFloat(i, elements[i] as Float)
+                            } else {
+                                ps.setString(i, elements[i].toString())
+                            }
                         }
                     }
+                    rs = ps.executeQuery("Select * from Device;")
+                    return rs!!
+                } catch (throwable: SQLException) {
+                    throw RuntimeException(throwable)
                 }
-                rs = ps.executeQuery()
-                rs
-            } catch (throwable: SQLException) {
-                throw RuntimeException(throwable)
             }
+            throw RuntimeException("Connection Refused!")
         }
 
         fun <T> resultSetToArrayList(rs:ResultSet, dataClass: Class<T>): ArrayList<T> {
             val list = ArrayList<T>()
             val constructor = dataClass.getDeclaredConstructor()
+
 
             while (rs.next()) {
                 val metaData = rs.metaData
@@ -88,7 +93,7 @@ class SQLHandler {
         @Throws(SQLException::class)
         fun sqlClose() {
             rs?.close()
-            connection.close()
+            connection!!.close()
         }
     }
 }

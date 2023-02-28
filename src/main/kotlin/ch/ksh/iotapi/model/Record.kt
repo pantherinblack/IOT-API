@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class Record(
+data class Record constructor(
     @Getter
     @Setter
     @NotNull
@@ -21,32 +21,31 @@ data class Record(
     @NotNull
     @RequestParam("deviceUUID")
     @JsonAlias("deviceUUID")
-    var deviceUUID : String,
+    var deviceUUID : String? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("timestamp")
     @JsonAlias("timestamp")
-    var timestamp : LocalDateTime?,
+    var timestamp : LocalDateTime? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("temperature")
     @JsonAlias("temperature")
-    var temperature : Float?,
+    var temperature : Float? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("humidity")
     @JsonAlias("humidity")
-    var humidity : Float?,
+    var humidity : Float? = null,
     @Getter
     @Setter
     @NotNull
     @RequestParam("batteryv")
     @JsonAlias("batteryv")
-    var batteryv : Float?
+    var batteryv : Float? = null
 ) {
-    var device: Device? = DeviceHandler.getInstance().getDeviceByUUID(deviceUUID)
-
+    var device: Device? = DeviceHandler.getInstance().getDeviceByUUID(deviceUUID!!)
 }
