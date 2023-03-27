@@ -3,9 +3,10 @@ package ch.ksh.iotapi.service
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.handler.RecordHandler
 import ch.ksh.iotapi.model.Record
+import ch.ksh.iotapi.util.ConfigReader
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/record")
@@ -15,7 +16,7 @@ class RecordService {
     fun listRecords(
         @RequestParam("time") time: Int?
     ): ResponseEntity<ArrayList<Record>> {
-        if (time != null && time>0) {
+        if (time != null && time > 0) {
             RecordHandler.getInstance().loadRecordList(time)
         } else {
             RecordHandler.getInstance().loadRecordList()
@@ -27,33 +28,38 @@ class RecordService {
     @ResponseBody
     @RequestMapping("/get")
     fun getRecordByUUID(
-        @RequestParam("uuid") uuid : String
-    ): ResponseEntity<Record?>  {
+        @RequestParam("uuid") uuid: String
+    ): ResponseEntity<Record?> {
         return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
     }
 
     @ResponseBody
     @PostMapping("/insert")
     fun insertRecord(
-        @RequestParam record: Record,
-        @RequestParam("latitude") latitude : Float? = null,
-        @RequestParam("longitude") longitude : Float? = null
+        @RequestBody record: Record,
+        @RequestParam("latitude") latitude: Float? = null,
+        @RequestParam("longitude") longitude: Float? = null,
+        @RequestParam("key") key: String? = null
     ): ResponseEntity<String?> {
 
-        RecordHandler.getInstance().insertRecord(record)
-        DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID!!, latitude = latitude, longitude = longitude)
-        return ResponseEntity.status(200).body(null)
+        if (key!=null && key.equals(ConfigReader.readConfig("key"))) {
+            RecordHandler.getInstance().insertRecord(record)
+            DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID!!, latitude = latitude, longitude = longitude)
+            return ResponseEntity.status(200).body(null)
+        } else {
+            return ResponseEntity.status(403).body(null)
+        }
     }
 
     @ResponseBody
     @PutMapping("/update")
     fun updateRecord(
-        @RequestParam("recordUUID") recordUUID : String,
-        @RequestParam("deviceUUID") deviceUUID : String? = null,
-        @RequestParam("timestamp") timestamp : LocalDateTime? = null,
-        @RequestParam("temperature") temperature : Float? = null,
-        @RequestParam("humidity") humidity : Float? = null,
-        @RequestParam("batteryv") batteryv : Float? = null,
+        @RequestParam("recordUUID") recordUUID: String,
+        @RequestParam("deviceUUID") deviceUUID: String? = null,
+        @RequestParam("timestamp") timestamp: Timestamp? = null,
+        @RequestParam("temperature") temperature: Float? = null,
+        @RequestParam("humidity") humidity: Float? = null,
+        @RequestParam("batteryv") batteryv: Float? = null,
     ): ResponseEntity<String?> {
         RecordHandler.getInstance().updateRecord(recordUUID, deviceUUID, timestamp, temperature, humidity, batteryv)
         return ResponseEntity.status(200).body(null)
