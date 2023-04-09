@@ -3,10 +3,10 @@ package ch.ksh.iotapi.service
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.handler.RecordHandler
 import ch.ksh.iotapi.model.Record
+import ch.ksh.iotapi.model.RecordInsertDTO
 import ch.ksh.iotapi.util.ConfigReader
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/record")
@@ -36,15 +36,24 @@ class RecordService {
     @ResponseBody
     @PostMapping("/insert")
     fun insertRecord(
-        @RequestBody record: Record,
-        @RequestParam("latitude") latitude: Float? = null,
-        @RequestParam("longitude") longitude: Float? = null,
-        @RequestParam("key") key: String? = null
+        @RequestBody riDTO: RecordInsertDTO
+
     ): ResponseEntity<String?> {
 
-        if (key!=null && key.equals(ConfigReader.readConfig("key"))) {
+        if (riDTO.key == ConfigReader.readConfig("key")) {
+            val record = Record(deviceUUID = riDTO.deviceUUID,
+                temperature = riDTO.temperature,
+                humidity = riDTO.humidity,
+                batteryv = riDTO.batteryv,
+                timestamp = riDTO.timestamp
+            )
             RecordHandler.getInstance().insertRecord(record)
-            DeviceHandler.getInstance().updateDevice(uuid = record.deviceUUID!!, latitude = latitude, longitude = longitude)
+
+            DeviceHandler.getInstance().updateDevice(
+                uuid = record.deviceUUID!!,
+                latitude = riDTO.latitude,
+                longitude = riDTO.longitude
+            )
             return ResponseEntity.status(200).body(null)
         } else {
             return ResponseEntity.status(403).body(null)
@@ -54,23 +63,24 @@ class RecordService {
     @ResponseBody
     @PutMapping("/update")
     fun updateRecord(
-        @RequestParam("recordUUID") recordUUID: String,
-        @RequestParam("deviceUUID") deviceUUID: String? = null,
-        @RequestParam("timestamp") timestamp: Timestamp? = null,
-        @RequestParam("temperature") temperature: Float? = null,
-        @RequestParam("humidity") humidity: Float? = null,
-        @RequestParam("batteryv") batteryv: Float? = null,
+        @RequestBody record: Record,
     ): ResponseEntity<String?> {
-        RecordHandler.getInstance().updateRecord(recordUUID, deviceUUID, timestamp, temperature, humidity, batteryv)
+        RecordHandler.getInstance().updateRecord(
+            record.recordUUID,
+            record.deviceUUID,
+            record.timestamp,
+            record.temperature,
+            record.humidity,
+            record.batteryv)
         return ResponseEntity.status(200).body(null)
     }
 
     @ResponseBody
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{uuid}")
     fun deleteRecord(
-        @RequestParam("recordUUID") recordUUID: String
+        @PathVariable uuid: String
     ): ResponseEntity<String?> {
-        RecordHandler.getInstance().deleteRecord(recordUUID)
+        RecordHandler.getInstance().deleteRecord(uuid)
         return ResponseEntity.status(200).body(null)
     }
 }

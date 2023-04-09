@@ -78,7 +78,7 @@ class DeviceHandler private constructor() {
 
     fun deleteDevice(uuid: String) {
         val list = mapOf<Int, Any>(1 to uuid)
-        SQLHandler.executeStatement("DELETE from Device where device UUID like ?", list)
+        SQLHandler.executeStatement("DELETE from Device where deviceUUID = ?", list)
         deviceList.remove(getDeviceByUUID(uuid))
     }
 }

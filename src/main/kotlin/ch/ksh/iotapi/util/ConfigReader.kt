@@ -10,7 +10,7 @@ class ConfigReader {
     companion object {
         fun readConfig(attribute: String): String {
             try {
-                val reader = BufferedReader(FileReader("/home/IoT_Temperaturlogger/api/iot.properties"))
+                val reader = BufferedReader(FileReader("C:/iot.properties"))
                 while (reader.ready()) {
                     val line = reader.readLine()
                     if (line.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0] == attribute) {

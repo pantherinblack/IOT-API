@@ -34,22 +34,24 @@ class DeviceService {
     @ResponseBody
     @PutMapping("/update")
     fun updateDevice(
-        @RequestParam("deviceUUID") deviceUUID: String,
-        @RequestParam("deviceName") deviceName: String? = null,
-        @RequestParam("latitude") latitude: Float? = null,
-        @RequestParam("longitude") longitude: Float? = null
+        @RequestBody device: Device
     ): ResponseEntity<String?> {
         DeviceHandler.getInstance()
-            .updateDevice(uuid = deviceUUID, deviceName = deviceName, latitude = latitude, longitude = longitude)
+            .updateDevice(
+                uuid = device.deviceUUID,
+                deviceName = device.deviceName,
+                latitude = device.latitude,
+                longitude = device.longitude
+            )
         return ResponseEntity.status(200).body(null)
     }
 
     @ResponseBody
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{uuid}")
     fun deleteDevice(
-        @RequestParam("deviceUUID") deviceUUID: String
+        @PathVariable uuid: String
     ): ResponseEntity<String?> {
-        DeviceHandler.getInstance().deleteDevice(uuid = deviceUUID)
+        DeviceHandler.getInstance().deleteDevice(uuid = uuid)
         return ResponseEntity.status(200).body(null)
     }
 }

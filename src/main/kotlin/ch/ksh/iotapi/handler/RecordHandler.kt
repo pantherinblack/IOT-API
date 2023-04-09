@@ -106,7 +106,7 @@ class RecordHandler {
 
     fun deleteRecord(uuid: String) {
         val list = mapOf<Int, Any>(1 to uuid)
-        SQLHandler.executeStatement("DELETE from Record where recordUUID like ?", list)
+        SQLHandler.executeStatement("DELETE from Record where recordUUID = ?", list)
         recordList.remove(getRecordByUUID(uuid))
     }
 }
