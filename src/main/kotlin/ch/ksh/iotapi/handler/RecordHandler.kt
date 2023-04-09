@@ -47,11 +47,28 @@ class RecordHandler {
     }
 
     fun getRecordByUUID(uuid: String): Record? {
+        //In Local storage
         recordList.forEach {
             if (it.recordUUID == uuid)
                 return it
         }
-        return null
+
+        //Not in storage, request to DB
+        val list = mapOf<Int, Any?>(
+            1 to uuid
+        )
+        val rs: ResultSet = SQLHandler.getResultSet(
+            "SELECT * FROM Record WHERE recordUUID = ? LIMIT 1",
+            list
+        )
+        //Convert to record-list
+        val tempList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
+
+        //Return DB output, if not empty
+        if (tempList.size==1)
+            return tempList[0]
+        else
+            return null
     }
 
     fun insertRecord(record: Record) {

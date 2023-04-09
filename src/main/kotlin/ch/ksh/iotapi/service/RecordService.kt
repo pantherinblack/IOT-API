@@ -26,9 +26,9 @@ class RecordService {
 
 
     @ResponseBody
-    @RequestMapping("/get")
+    @RequestMapping("/get/{uuid}")
     fun getRecordByUUID(
-        @RequestParam("uuid") uuid: String
+        @PathVariable uuid: String
     ): ResponseEntity<Record?> {
         return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
     }
@@ -41,7 +41,8 @@ class RecordService {
     ): ResponseEntity<String?> {
 
         if (riDTO.key == ConfigReader.readConfig("key")) {
-            val record = Record(deviceUUID = riDTO.deviceUUID,
+            val record = Record(
+                deviceUUID = riDTO.deviceUUID,
                 temperature = riDTO.temperature,
                 humidity = riDTO.humidity,
                 batteryv = riDTO.batteryv,

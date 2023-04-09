@@ -15,9 +15,9 @@ class DeviceService {
     }
 
     @ResponseBody
-    @GetMapping("/get")
+    @GetMapping("/get/{uuid}")
     fun getDeviceByUUID(
-        @RequestParam("deviceUUID") uuid: String
+        @PathVariable uuid: String
     ): ResponseEntity<Device?> {
         return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
     }
@@ -27,8 +27,12 @@ class DeviceService {
     fun insertDevice(
         @RequestBody device: Device
     ): ResponseEntity<String?> {
-        DeviceHandler.getInstance().insertDevice(device)
-        return ResponseEntity.status(200).body(null)
+        if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) == null) {
+            DeviceHandler.getInstance().insertDevice(device)
+            return ResponseEntity.status(200).body(null)
+        } else {
+            return ResponseEntity.status(400).body("UUID already exists.")
+        }
     }
 
     @ResponseBody
@@ -36,13 +40,18 @@ class DeviceService {
     fun updateDevice(
         @RequestBody device: Device
     ): ResponseEntity<String?> {
-        DeviceHandler.getInstance()
-            .updateDevice(
-                uuid = device.deviceUUID,
-                deviceName = device.deviceName,
-                latitude = device.latitude,
-                longitude = device.longitude
-            )
+        try {
+            DeviceHandler.getInstance()
+                .updateDevice(
+                    uuid = device.deviceUUID,
+                    deviceName = device.deviceName,
+                    latitude = device.latitude,
+                    longitude = device.longitude
+                )
+        } catch (n: NullPointerException) {
+            return ResponseEntity.status(400).body("Missing or wrong input.")
+        }
+
         return ResponseEntity.status(200).body(null)
     }
 
@@ -51,7 +60,11 @@ class DeviceService {
     fun deleteDevice(
         @PathVariable uuid: String
     ): ResponseEntity<String?> {
-        DeviceHandler.getInstance().deleteDevice(uuid = uuid)
+        try {
+            DeviceHandler.getInstance().deleteDevice(uuid = uuid)
+        } catch (n: NullPointerException) {
+            return ResponseEntity.status(400).body("Missing or wrong input.")
+        }
         return ResponseEntity.status(200).body(null)
     }
 }
