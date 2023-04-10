@@ -64,6 +64,8 @@ class DeviceService {
             DeviceHandler.getInstance().deleteDevice(uuid = uuid)
         } catch (n: NullPointerException) {
             return ResponseEntity.status(400).body("Missing or wrong input.")
+        } catch (n: RuntimeException) {
+            return ResponseEntity.status(400).body("UUID does not exist.")
         }
         return ResponseEntity.status(200).body(null)
     }
