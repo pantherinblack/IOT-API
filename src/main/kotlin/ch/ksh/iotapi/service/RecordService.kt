@@ -5,6 +5,7 @@ import ch.ksh.iotapi.handler.RecordHandler
 import ch.ksh.iotapi.model.Record
 import ch.ksh.iotapi.model.RecordInsertDTO
 import ch.ksh.iotapi.util.ConfigReader
+import jakarta.validation.constraints.Pattern
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -28,6 +29,7 @@ class RecordService {
     @ResponseBody
     @RequestMapping("/get/{uuid}")
     fun getRecordByUUID(
+        @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$", message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$.")
         @PathVariable uuid: String
     ): ResponseEntity<Record?> {
         return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
@@ -79,6 +81,7 @@ class RecordService {
     @ResponseBody
     @DeleteMapping("/delete/{uuid}")
     fun deleteRecord(
+        @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$", message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$.")
         @PathVariable uuid: String
     ): ResponseEntity<String?> {
         RecordHandler.getInstance().deleteRecord(uuid)

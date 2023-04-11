@@ -2,6 +2,7 @@ package ch.ksh.iotapi.service
 
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.model.Device
+import jakarta.validation.constraints.Size
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -17,6 +18,7 @@ class DeviceService {
     @ResponseBody
     @GetMapping("/get/{uuid}")
     fun getDeviceByUUID(
+        @Size(min = 10, max = 36, message = "UUID must be >= 10 >= 36 characters in length.")
         @PathVariable uuid: String
     ): ResponseEntity<Device?> {
         return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
@@ -58,6 +60,7 @@ class DeviceService {
     @ResponseBody
     @DeleteMapping("/delete/{uuid}")
     fun deleteDevice(
+        @Size(min = 10, max = 36, message = "UUID must be >= 10 >= 36 characters in length.")
         @PathVariable uuid: String
     ): ResponseEntity<String?> {
         try {
