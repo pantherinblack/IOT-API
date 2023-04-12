@@ -2,9 +2,7 @@ package ch.ksh.iotapi.model
 
 import ch.ksh.iotapi.handler.DeviceHandler
 import com.fasterxml.jackson.annotation.JsonAlias
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Pattern
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 import org.springframework.web.bind.annotation.RequestParam
 import java.sql.Timestamp
 import java.util.*
@@ -22,14 +20,20 @@ data class Record constructor(
     @RequestParam("timestamp")
     @JsonAlias("timestamp")
     var timestamp: Timestamp? = null,
+    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
+    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
     @NotNull
     @RequestParam("temperature")
     @JsonAlias("temperature")
     var temperature: Float? = null,
+    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
+    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
     @NotNull
     @RequestParam("humidity")
     @JsonAlias("humidity")
     var humidity: Float? = null,
+    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
+    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
     @NotNull
     @RequestParam("batteryv")
     @JsonAlias("batteryv")
