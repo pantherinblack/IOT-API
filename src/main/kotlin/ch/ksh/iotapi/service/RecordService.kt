@@ -5,6 +5,8 @@ import ch.ksh.iotapi.handler.RecordHandler
 import ch.ksh.iotapi.model.Record
 import ch.ksh.iotapi.model.RecordInsertDTO
 import ch.ksh.iotapi.util.ConfigReader
+import jakarta.validation.constraints.DecimalMax
+import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Pattern
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,9 +17,11 @@ class RecordService {
     @ResponseBody
     @GetMapping("/list")
     fun listRecords(
+        @DecimalMin(value = "1", message = "Value must be >= 1")
+        @DecimalMax(value = "10000", message = "Value must be >= 10000")
         @RequestParam("time") time: Int?
     ): ResponseEntity<ArrayList<Record>> {
-        if (time != null && time > 0) {
+        if (time != null) {
             RecordHandler.getInstance().loadRecordList(time)
         } else {
             RecordHandler.getInstance().loadRecordList()
