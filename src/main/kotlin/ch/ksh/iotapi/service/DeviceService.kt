@@ -1,5 +1,6 @@
 package ch.ksh.iotapi.service
 
+import ch.ksh.iotapi.handler.AuthenticationHandler
 import ch.ksh.iotapi.handler.DeviceHandler
 import ch.ksh.iotapi.model.Device
 import jakarta.validation.constraints.Size
@@ -19,57 +20,76 @@ class DeviceService {
     @GetMapping("/get/{uuid}")
     fun getDeviceByUUID(
         @Size(min = 10, max = 36, message = "UUID must be >= 10 >= 36 characters in length.")
-        @PathVariable uuid: String
+        @PathVariable uuid: String,
+        @CookieValue("userName") userName: String,
+        @CookieValue("password") password: String
     ): ResponseEntity<Device?> {
-        return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
+        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+            return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
+        }
+        return ResponseEntity.status(401).body(null)
     }
 
     @ResponseBody
     @PostMapping("/insert")
     fun insertDevice(
-        @RequestBody device: Device
+        @RequestBody device: Device,
+        @CookieValue("userName") userName: String,
+        @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) == null) {
-            DeviceHandler.getInstance().insertDevice(device)
-            return ResponseEntity.status(200).body(null)
-        } else {
-            return ResponseEntity.status(400).body("UUID already exists.")
+        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+            if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) == null) {
+                DeviceHandler.getInstance().insertDevice(device)
+                return ResponseEntity.status(200).body(null)
+            } else {
+                return ResponseEntity.status(400).body("UUID already exists.")
+            }
         }
+        return ResponseEntity.status(401).body(null)
     }
 
     @ResponseBody
     @PutMapping("/update")
     fun updateDevice(
-        @RequestBody device: Device
+        @RequestBody device: Device,
+        @CookieValue("userName") userName: String,
+        @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        try {
-            DeviceHandler.getInstance()
-                .updateDevice(
-                    uuid = device.deviceUUID,
-                    deviceName = device.deviceName,
-                    latitude = device.latitude,
-                    longitude = device.longitude
-                )
-        } catch (n: NullPointerException) {
-            return ResponseEntity.status(400).body("Missing or wrong input.")
+        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+            try {
+                DeviceHandler.getInstance()
+                    .updateDevice(
+                        uuid = device.deviceUUID,
+                        deviceName = device.deviceName,
+                        latitude = device.latitude,
+                        longitude = device.longitude
+                    )
+            } catch (n: NullPointerException) {
+                return ResponseEntity.status(400).body("Missing or wrong input.")
+            }
+            return ResponseEntity.status(200).body(null)
         }
-
-        return ResponseEntity.status(200).body(null)
+        return ResponseEntity.status(401).body(null)
     }
 
     @ResponseBody
     @DeleteMapping("/delete/{uuid}")
     fun deleteDevice(
         @Size(min = 10, max = 36, message = "UUID must be >= 10 >= 36 characters in length.")
-        @PathVariable uuid: String
+        @PathVariable uuid: String,
+        @CookieValue("userName") userName: String,
+        @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        try {
-            DeviceHandler.getInstance().deleteDevice(uuid = uuid)
-        } catch (n: NullPointerException) {
-            return ResponseEntity.status(400).body("Missing or wrong input.")
-        } catch (n: RuntimeException) {
-            return ResponseEntity.status(400).body("UUID does not exist.")
+        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+            try {
+                DeviceHandler.getInstance().deleteDevice(uuid = uuid)
+            } catch (n: NullPointerException) {
+                return ResponseEntity.status(400).body("Missing or wrong input.")
+            } catch (n: RuntimeException) {
+                return ResponseEntity.status(400).body("UUID does not exist.")
+            }
+            return ResponseEntity.status(200).body(null)
         }
-        return ResponseEntity.status(200).body(null)
+        return ResponseEntity.status(401).body(null)
     }
 }
