@@ -55,41 +55,36 @@ class RecordService {
     @ResponseBody
     @PostMapping("/insert")
     fun insertRecord(
-        @RequestBody riDTO: RecordInsertDTO,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @RequestBody riDTO: RecordInsertDTO
     ): ResponseEntity<String?> {
-        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
-            if (riDTO.valid()== null) {
+        if (riDTO.valid()== null) {
 
-                if (riDTO.key == ConfigReader.readConfig("key")) {
-                    if (DeviceHandler.getInstance().getDeviceByUUID(riDTO.deviceUUID)!=null) {
-                        val record = Record(
-                            deviceUUID = riDTO.deviceUUID,
-                            temperature = riDTO.temperature,
-                            humidity = riDTO.humidity,
-                            batteryv = riDTO.batteryv,
-                            timestamp = riDTO.timestamp
-                        )
-                        RecordHandler.getInstance().insertRecord(record)
+            if (riDTO.key == ConfigReader.readConfig("key")) {
+                if (DeviceHandler.getInstance().getDeviceByUUID(riDTO.deviceUUID)!=null) {
+                    val record = Record(
+                        deviceUUID = riDTO.deviceUUID,
+                        temperature = riDTO.temperature,
+                        humidity = riDTO.humidity,
+                        batteryv = riDTO.batteryv,
+                        timestamp = riDTO.timestamp
+                    )
+                    RecordHandler.getInstance().insertRecord(record)
 
-                        DeviceHandler.getInstance().updateDevice(
-                            uuid = record.deviceUUID!!,
-                            latitude = riDTO.latitude,
-                            longitude = riDTO.longitude
-                        )
-                        return ResponseEntity.status(200).body(null)
-                    } else {
-                        return ResponseEntity.status(400).body("deviceUUID does not exist")
-                    }
+                    DeviceHandler.getInstance().updateDevice(
+                        uuid = record.deviceUUID!!,
+                        latitude = riDTO.latitude,
+                        longitude = riDTO.longitude
+                    )
+                    return ResponseEntity.status(200).body(null)
                 } else {
-                    return ResponseEntity.status(403).body(null)
+                    return ResponseEntity.status(400).body("deviceUUID does not exist")
                 }
             } else {
-                return ResponseEntity.status(400).body(riDTO.valid())
+                return ResponseEntity.status(403).body(null)
             }
+        } else {
+            return ResponseEntity.status(400).body(riDTO.valid())
         }
-        return ResponseEntity.status(401).body(null)
     }
 
     @ResponseBody
