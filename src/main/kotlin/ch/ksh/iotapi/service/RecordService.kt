@@ -10,8 +10,10 @@ import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Pattern
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+@Validated
 @RestController
 @RequestMapping("/record")
 class RecordService {
@@ -58,24 +60,33 @@ class RecordService {
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
-            if (riDTO.key == ConfigReader.readConfig("key")) {
-                val record = Record(
-                    deviceUUID = riDTO.deviceUUID,
-                    temperature = riDTO.temperature,
-                    humidity = riDTO.humidity,
-                    batteryv = riDTO.batteryv,
-                    timestamp = riDTO.timestamp
-                )
-                RecordHandler.getInstance().insertRecord(record)
+            if (riDTO.valid()== null) {
 
-                DeviceHandler.getInstance().updateDevice(
-                    uuid = record.deviceUUID!!,
-                    latitude = riDTO.latitude,
-                    longitude = riDTO.longitude
-                )
-                return ResponseEntity.status(200).body(null)
+                if (riDTO.key == ConfigReader.readConfig("key")) {
+                    if (DeviceHandler.getInstance().getDeviceByUUID(riDTO.deviceUUID)!=null) {
+                        val record = Record(
+                            deviceUUID = riDTO.deviceUUID,
+                            temperature = riDTO.temperature,
+                            humidity = riDTO.humidity,
+                            batteryv = riDTO.batteryv,
+                            timestamp = riDTO.timestamp
+                        )
+                        RecordHandler.getInstance().insertRecord(record)
+
+                        DeviceHandler.getInstance().updateDevice(
+                            uuid = record.deviceUUID!!,
+                            latitude = riDTO.latitude,
+                            longitude = riDTO.longitude
+                        )
+                        return ResponseEntity.status(200).body(null)
+                    } else {
+                        return ResponseEntity.status(400).body("deviceUUID does not exist")
+                    }
+                } else {
+                    return ResponseEntity.status(403).body(null)
+                }
             } else {
-                return ResponseEntity.status(403).body(null)
+                return ResponseEntity.status(400).body(riDTO.valid())
             }
         }
         return ResponseEntity.status(401).body(null)
@@ -89,15 +100,28 @@ class RecordService {
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
-            RecordHandler.getInstance().updateRecord(
-                record.recordUUID,
-                record.deviceUUID,
-                record.timestamp,
-                record.temperature,
-                record.humidity,
-                record.batteryv
-            )
-            return ResponseEntity.status(200).body(null)
+            if (record.valid()==null) {
+                if (RecordHandler.getInstance().getRecordByUUID(record.recordUUID)!=null) {
+                    if (DeviceHandler.getInstance().getDeviceByUUID(record.deviceUUID)!=null) {
+                        RecordHandler.getInstance().updateRecord(
+                            record.recordUUID,
+                            record.deviceUUID,
+                            record.timestamp,
+                            record.temperature,
+                            record.humidity,
+                            record.batteryv
+                        )
+                        return ResponseEntity.status(200).body(null)
+                    } else {
+                        return ResponseEntity.status(400).body("deviceUUID does not exist")
+                    }
+                } else {
+                    return ResponseEntity.status(400).body("recordUUID does not exist or is empty")
+                }
+            } else {
+
+                return ResponseEntity.status(400).body(record.valid())
+            }
         }
         return ResponseEntity.status(401).body(null)
     }
@@ -111,8 +135,11 @@ class RecordService {
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
-            RecordHandler.getInstance().deleteRecord(uuid)
-            return ResponseEntity.status(200).body(null)
+            if (RecordHandler.getInstance().deleteRecord(uuid)) {
+                return ResponseEntity.status(200).body(null)
+            } else {
+                return ResponseEntity.status(400).body("This UUID does not exist")
+            }
         }
         return ResponseEntity.status(401).body(null)
     }

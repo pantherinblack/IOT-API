@@ -1,42 +1,15 @@
 package ch.ksh.iotapi.model
 
 import ch.ksh.iotapi.handler.DeviceHandler
-import com.fasterxml.jackson.annotation.JsonAlias
-import jakarta.validation.constraints.*
-import org.springframework.web.bind.annotation.RequestParam
 import java.sql.Timestamp
 import java.util.*
 
 data class Record constructor(
-    @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$", message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$.")
-    @RequestParam("recordUUID")
-    @JsonAlias("recordUUID")
     var recordUUID: String = UUID.randomUUID().toString(),
-    @Size(min = 10, max = 36, message = "UUID must be >= 10 >= 36 characters in length.")
-    @RequestParam("deviceUUID")
-    @JsonAlias("deviceUUID")
     var deviceUUID: String? = null,
-    @NotNull
-    @RequestParam("timestamp")
-    @JsonAlias("timestamp")
     var timestamp: Timestamp? = null,
-    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
-    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
-    @NotNull
-    @RequestParam("temperature")
-    @JsonAlias("temperature")
     var temperature: Float? = null,
-    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
-    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
-    @NotNull
-    @RequestParam("humidity")
-    @JsonAlias("humidity")
     var humidity: Float? = null,
-    @DecimalMin(value = "-1000.00", message = "Value must be >= -100")
-    @DecimalMax(value = "1000.00", message = "Value must be >= 1000")
-    @NotNull
-    @RequestParam("batteryv")
-    @JsonAlias("batteryv")
     var batteryv: Float? = null
 ) {
     private var device: Device? = null
@@ -44,5 +17,33 @@ data class Record constructor(
     fun getDevice(): Device? {
         device = DeviceHandler.getInstance().getDeviceByUUID(deviceUUID)
         return device
+    }
+
+    fun valid(): String? {
+        var message = ""
+        if (deviceUUID==null)
+            return "deviceUUID must not be null"
+        if (timestamp==null)
+            return "timestamp must not be null"
+        if (temperature==null)
+            return "temperature must not be null"
+        if (humidity==null)
+            return "humidity must not be null"
+        if (batteryv==null)
+            return "batteryv must not be null"
+
+        if (!recordUUID.matches(Regex("^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$")))
+            message+="recordUUID must match UUID syntax"
+        if (deviceUUID!!.length<5 || deviceUUID!!.length>36)
+            message+="deviceUUID must be between 5 and 36 in length"
+        if (temperature!! <-1000 || temperature!! >1000)
+            message+="temperature must be between -1000 and 1000"
+        if (humidity!! <-1000 || humidity!! >1000)
+            message+="humidity must be between -1000 and 1000"
+        if (batteryv!! <-1000 || batteryv!! >1000)
+            message+="batteryv must be between -1000 and 1000"
+        if (message=="")
+            return null
+        return message
     }
 }

@@ -76,10 +76,9 @@ class DeviceHandler private constructor() {
         )
     }
 
-    fun deleteDevice(uuid: String) {
+    fun deleteDevice(uuid: String): Boolean {
         val list = mapOf<Int, Any>(1 to uuid)
         SQLHandler.executeStatement("DELETE from Device where deviceUUID = ?", list)
-        if (!deviceList.remove(getDeviceByUUID(uuid)))
-            throw RuntimeException("UUID Does not exist!");
+        return deviceList.remove(getDeviceByUUID(uuid))
     }
 }
