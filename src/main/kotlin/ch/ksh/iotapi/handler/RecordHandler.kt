@@ -65,7 +65,7 @@ class RecordHandler {
         val tempList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
 
         //Return DB output, if not empty
-        if (tempList.size==1)
+        if (tempList.size == 1)
             return tempList[0]
         else
             return null

@@ -15,7 +15,8 @@ class SQLHandler {
                 connection = DriverManager.getConnection(
                     ConfigReader.readConfig("jdbcURL"),
                     ConfigReader.readConfig("dbUser"),
-                    ConfigReader.readConfig("dbPassword"))
+                    ConfigReader.readConfig("dbPassword")
+                )
                 getConnection()
             }
             return connection!!

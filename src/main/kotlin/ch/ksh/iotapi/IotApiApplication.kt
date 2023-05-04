@@ -8,5 +8,5 @@ import org.springframework.boot.runApplication
 class IotApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<IotApiApplication>(*args)
+    runApplication<IotApiApplication>(*args)
 }

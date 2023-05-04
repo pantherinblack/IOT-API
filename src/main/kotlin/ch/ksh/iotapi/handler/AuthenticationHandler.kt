@@ -19,7 +19,8 @@ class AuthenticationHandler {
         }
         if (
             userName.equals(ConfigReader.readConfig("userName")) &&
-                password.equals(ConfigReader.readConfig("password"))) {
+            password.equals(ConfigReader.readConfig("password"))
+        ) {
             return true
         }
         return false

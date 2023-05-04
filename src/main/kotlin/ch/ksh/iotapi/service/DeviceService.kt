@@ -26,7 +26,7 @@ class DeviceService {
         @CookieValue("userName") userName: String,
         @CookieValue("password") password: String
     ): ResponseEntity<Device?> {
-        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+        if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
         }
         return ResponseEntity.status(401).body(null)
@@ -39,9 +39,9 @@ class DeviceService {
         @CookieValue("userName") userName: String,
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+        if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) == null) {
-                if (device.valid()==null) {
+                if (device.valid() == null) {
                     DeviceHandler.getInstance().insertDevice(device)
                     return ResponseEntity.status(200).body(null)
                 } else {
@@ -61,9 +61,9 @@ class DeviceService {
         @CookieValue("userName") userName: String,
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
-            if (device.valid()==null) {
-                if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID)!=null) {
+        if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
+            if (device.valid() == null) {
+                if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) != null) {
                     DeviceHandler.getInstance()
                         .updateDevice(
                             uuid = device.deviceUUID,
@@ -90,7 +90,7 @@ class DeviceService {
         @CookieValue("userName") userName: String,
         @CookieValue("password") password: String
     ): ResponseEntity<String?> {
-        if (AuthenticationHandler.getInstance().isValidUser(userName,password)) {
+        if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (DeviceHandler.getInstance().deleteDevice(uuid = uuid)) {
                 return ResponseEntity.status(200).body(null)
             } else {
