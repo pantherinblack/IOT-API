@@ -8,16 +8,35 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+/**
+ * Device Service
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 @Validated
 @RestController
 @RequestMapping("/device")
 class DeviceService {
+
+    /**
+     * returns a list of all devices
+     *
+     * @return DeviceList
+     */
     @ResponseBody
     @GetMapping("/list")
     fun listDevices(): ResponseEntity<ArrayList<Device>> {
         return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceList())
     }
 
+    /**
+     * gets a specific device
+     *
+     * @param uuid of the device
+     * @param userName as authentication
+     * @param password as authentication
+     * @return device
+     */
     @ResponseBody
     @GetMapping("/get/{uuid}")
     fun getDeviceByUUID(
@@ -32,6 +51,13 @@ class DeviceService {
         return ResponseEntity.status(401).body(null)
     }
 
+    /**
+     * Inserts a new device
+     *
+     * @param device to be inserted
+     * @param userName as authentication
+     * @param password as authentication
+     */
     @ResponseBody
     @PostMapping("/insert")
     fun insertDevice(
@@ -54,6 +80,13 @@ class DeviceService {
         return ResponseEntity.status(401).body(null)
     }
 
+    /**
+     * updates a device with new data
+     *
+     * @param device with updated data
+     * @param userName as authentication
+     * @param password as authentication
+     */
     @ResponseBody
     @PutMapping("/update")
     fun updateDevice(
@@ -82,6 +115,13 @@ class DeviceService {
         return ResponseEntity.status(401).body(null)
     }
 
+    /**
+     * deletes a device
+     *
+     * @param uuid of the device to delete
+     * @param userName as authentication
+     * @param password as authentication
+     */
     @ResponseBody
     @DeleteMapping("/delete/{uuid}")
     fun deleteDevice(

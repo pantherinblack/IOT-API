@@ -4,11 +4,21 @@ import ch.ksh.iotapi.util.ConfigReader
 import java.sql.*
 import java.time.LocalDateTime
 
+/**
+ * Business logic for all records
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 class SQLHandler {
     companion object {
         private var connection: Connection? = null
         private var rs: ResultSet? = null
 
+        /**
+         * creates and returns a connection object
+         *
+         * @return Connection
+         */
         @Throws(SQLException::class)
         fun getConnection(): Connection {
             if (connection == null || connection!!.isClosed || !connection!!.isValid(2)) {
@@ -22,15 +32,34 @@ class SQLHandler {
             return connection!!
         }
 
+        /**
+         * creates and returns a prepared statement
+         *
+         * @param sql to be executed
+         * @return PreparedStatement
+         */
         @Throws(SQLException::class)
         private fun getPreparedStatement(sql: String): PreparedStatement {
             return getConnection().prepareStatement(sql)
         }
 
+        /**
+         * return the resultSet of the query
+         *
+         * @param sql to be executed
+         * @return ResultSet
+         */
         fun getResultSet(sql: String): ResultSet {
             return getResultSet(sql, null)
         }
 
+        /**
+         * fills and returns a preparedStatement
+         *
+         * @param sql to be executed
+         * @param elements to be added (Key -> 0-i, Value -> Object)
+         * @return PreparedStatement
+         */
         fun getFilledPreparedStatement(sql: String, elements: Map<Int, Any?>?): PreparedStatement {
             if (getConnection().isValid(2)) {
                 try {
@@ -61,15 +90,34 @@ class SQLHandler {
             throw RuntimeException("Connection Refused!")
         }
 
+        /**
+         * return the resultSet of the query
+         *
+         * @param sql to be executed
+         * @return ResultSet
+         */
         fun getResultSet(sql: String, elements: Map<Int, Any?>?): ResultSet {
             return getFilledPreparedStatement(sql, elements).executeQuery()
         }
 
+        /**
+         * executes a statement
+         *
+         * @param sql to be executed
+         * @param elements to be added (Key -> 0-i, Value -> Object)
+         */
         fun executeStatement(sql: String, elements: Map<Int, Any?>?) {
             getFilledPreparedStatement(sql, elements).execute()
             sqlClose()
         }
 
+        /**
+         * converts a ResultSet to a list of objects
+         *
+         * @param rs to be converted
+         * @param dataClass the class of objects
+         * @return List of Objects (List<dataclass>)
+         */
         fun <T> resultSetToArrayList(rs: ResultSet, dataClass: Class<T>): ArrayList<T> {
             val list = ArrayList<T>()
             val constructor = dataClass.getDeclaredConstructor()
@@ -106,6 +154,9 @@ class SQLHandler {
             return list
         }
 
+        /**
+         * closes the connection to the database
+         */
         @Throws(SQLException::class)
         fun sqlClose() {
             rs?.close()

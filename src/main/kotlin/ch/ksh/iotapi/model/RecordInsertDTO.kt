@@ -2,6 +2,11 @@ package ch.ksh.iotapi.model
 
 import java.sql.Timestamp
 
+/**
+ * Record model
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 data class RecordInsertDTO constructor(
     var deviceUUID: String? = null,
     var timestamp: Timestamp? = null,
@@ -12,6 +17,11 @@ data class RecordInsertDTO constructor(
     var longitude: Float? = null,
     var key: String? = null
 ) {
+    /**
+     * checks if the values are in the standard parameters.
+     *
+     * @return boolean (true -> valid, false -> invalid)
+     */
     fun valid(): String? {
         var message = ""
 
