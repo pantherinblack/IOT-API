@@ -23,8 +23,8 @@ class DeviceService {
     fun getDeviceByUUID(
         @Size(min = 5, max = 36, message = "UUID must be >= 5 >= 36 characters in length.")
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<Device?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             return ResponseEntity.status(200).body(DeviceHandler.getInstance().getDeviceByUUID(uuid))
@@ -36,8 +36,8 @@ class DeviceService {
     @PostMapping("/insert")
     fun insertDevice(
         @RequestBody device: Device,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (DeviceHandler.getInstance().getDeviceByUUID(device.deviceUUID) == null) {
@@ -58,8 +58,8 @@ class DeviceService {
     @PutMapping("/update")
     fun updateDevice(
         @RequestBody device: Device,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (device.valid() == null) {
@@ -87,8 +87,8 @@ class DeviceService {
     fun deleteDevice(
         @Size(min = 5, max = 36, message = "UUID must be >= 5 >= 36 characters in length.")
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (DeviceHandler.getInstance().deleteDevice(uuid = uuid)) {

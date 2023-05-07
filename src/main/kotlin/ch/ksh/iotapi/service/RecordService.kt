@@ -20,11 +20,11 @@ class RecordService {
     @ResponseBody
     @GetMapping("/list")
     fun listRecords(
-        @DecimalMin(value = "1", message = "Value must be >= 1")
+        @DecimalMin(value = "0", message = "Value must be >= 1")
         @DecimalMax(value = "10000", message = "Value must be >= 10000")
         @RequestParam("time") time: Int?,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<ArrayList<Record>> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (time != null) {
@@ -46,8 +46,8 @@ class RecordService {
             message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$."
         )
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<Record?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
@@ -94,8 +94,8 @@ class RecordService {
     @PutMapping("/update")
     fun updateRecord(
         @RequestBody record: Record,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (record.valid() == null) {
@@ -132,8 +132,8 @@ class RecordService {
             message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$."
         )
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (RecordHandler.getInstance().deleteRecord(uuid)) {
