@@ -7,10 +7,23 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.Cookie
 
 
+/**
+ * Authentication Service
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 @RestController
 @RequestMapping("/auth")
 class AuthenticationService {
 
+    /**
+     * logs a user using cookies in
+     *
+     * @param userName of the user
+     * @param password of the user
+     *
+     * @return auth. cookies
+     */
     @ResponseBody
     @GetMapping("/login")
     fun login(
@@ -46,6 +59,11 @@ class AuthenticationService {
         return ResponseEntity.status(403).body(null)
     }
 
+    /**
+     * logs a user out
+     *
+     * @return self-killing cookies
+     */
     @ResponseBody
     @DeleteMapping("/logout")
     fun logout(): ResponseEntity<String> {

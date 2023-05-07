@@ -6,8 +6,19 @@ import java.io.FileReader
 import java.io.IOException
 import java.util.*
 
+/**
+ * ConfigReader used to read porperties
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 class ConfigReader {
     companion object {
+        /**
+         * reads a property and returns the value of it
+         *
+         * @param attribute to read
+         * @return String value
+         */
         fun readConfig(attribute: String): String {
             try {
                 val reader = BufferedReader(FileReader("/home/IoT_Temperaturlogger/api/iot.properties"))

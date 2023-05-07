@@ -6,12 +6,21 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import kotlin.math.abs
 
+/**
+ * Business logic for all records
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 class RecordHandler {
     private var recordList: ArrayList<Record> = ArrayList()
 
     companion object {
         private var instance: RecordHandler? = null
 
+        /**
+         * gives the instance object
+         * @return instance
+         */
         fun getInstance(): RecordHandler {
             DeviceHandler.getInstance()
             if (instance == null)
@@ -20,10 +29,16 @@ class RecordHandler {
         }
     }
 
+    /**
+     * loads data
+     */
     init {
         loadRecordList()
     }
 
+    /**
+     * loads all records that are a day (or less) old
+     */
     fun loadRecordList() {
         val rs: ResultSet =
             SQLHandler.getResultSet("SELECT COUNT(*) FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL -1 DAY) ORDER BY timestamp DESC")
@@ -34,18 +49,33 @@ class RecordHandler {
 
     }
 
+    /**
+     * loads all devices that are x days (or less) old
+     * @param days how old the records may be
+     */
     fun loadRecordList(days: Int) {
         val rs: ResultSet = SQLHandler.getResultSet(
-            "SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL " + (0 - abs(days)) + " DAY) ORDER BY timestamp DESC"
+            "SELECT * FROM Record WHERE date(timestamp) >= date_add(current_timestamp,INTERVAL " +
+                    (0 - abs(days)) + " DAY) ORDER BY timestamp DESC"
         )
         recordList = SQLHandler.resultSetToArrayList(rs, Record::class.java)
         SQLHandler.sqlClose()
     }
 
+    /**
+     * gives all stored records back
+     * @return recordList
+     */
     fun getRecordList(): ArrayList<Record> {
         return recordList
     }
 
+    /**
+     * gives back a record if it exists
+     *
+     * @param uuid of the record
+     * @return record
+     */
     fun getRecordByUUID(uuid: String): Record? {
         //In Local storage
         recordList.forEach {
@@ -71,6 +101,11 @@ class RecordHandler {
             return null
     }
 
+    /**
+     * adds a record
+     *
+     * @param record to be added
+     */
     fun insertRecord(record: Record) {
         val list = mapOf<Int, Any?>(
             1 to record.recordUUID,
@@ -88,6 +123,16 @@ class RecordHandler {
         recordList.removeIf { record1 -> (record1.timestamp!!.toLocalDateTime() >= LocalDateTime.now().minusDays(1)) }
     }
 
+    /**
+     * updates a record
+     *
+     * @param uuid of the record that is to get updated
+     * @param deviceUUID to be updated
+     * @param timestamp to be updated
+     * @param temperature to be updated
+     * @param humidity to be updated
+     * @param batteryv to be updated
+     */
     fun updateRecord(
         uuid: String,
         deviceUUID: String? = null,
@@ -121,6 +166,11 @@ class RecordHandler {
         )
     }
 
+    /**
+     * deletes a device
+     *
+     * @param uuid of the record that is to be deleted
+     */
     fun deleteRecord(uuid: String): Boolean {
         val list = mapOf<Int, Any>(1 to uuid)
         SQLHandler.executeStatement("DELETE from Record where recordUUID = ?", list)

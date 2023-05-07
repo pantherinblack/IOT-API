@@ -13,18 +13,30 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+/**
+ * Record Service
+ * @author Kevin Stupar
+ * @since 07.05.2023
+ */
 @Validated
 @RestController
 @RequestMapping("/record")
 class RecordService {
+
+    /**
+     * returns a list of all records with a specific age
+     *
+     * @param time in days (max)
+     * @return DeviceList
+     */
     @ResponseBody
     @GetMapping("/list")
     fun listRecords(
-        @DecimalMin(value = "1", message = "Value must be >= 1")
+        @DecimalMin(value = "0", message = "Value must be >= 1")
         @DecimalMax(value = "10000", message = "Value must be >= 10000")
         @RequestParam("time") time: Int?,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<ArrayList<Record>> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (time != null) {
@@ -37,7 +49,14 @@ class RecordService {
         return ResponseEntity.status(401).body(null)
     }
 
-
+    /**
+     * gets a specific record
+     *
+     * @param uuid of the record
+     * @param userName as authentication
+     * @param password as authentication
+     * @return record
+     */
     @ResponseBody
     @RequestMapping("/get/{uuid}")
     fun getRecordByUUID(
@@ -46,8 +65,8 @@ class RecordService {
             message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$."
         )
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<Record?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             return ResponseEntity.status(200).body(RecordHandler.getInstance().getRecordByUUID(uuid))
@@ -55,6 +74,11 @@ class RecordService {
         return ResponseEntity.status(401).body(null)
     }
 
+    /**
+     * Inserts a new record
+     *
+     * @param riDTO to be inserted
+     */
     @ResponseBody
     @PostMapping("/insert")
     fun insertRecord(
@@ -90,12 +114,19 @@ class RecordService {
         }
     }
 
+    /**
+     * updates a record with new data
+     *
+     * @param record with updated data
+     * @param userName as authentication
+     * @param password as authentication
+     */
     @ResponseBody
     @PutMapping("/update")
     fun updateRecord(
         @RequestBody record: Record,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (record.valid() == null) {
@@ -124,6 +155,13 @@ class RecordService {
         return ResponseEntity.status(401).body(null)
     }
 
+    /**
+     * deletes a record
+     *
+     * @param uuid of the record to delete
+     * @param userName as authentication
+     * @param password as authentication
+     */
     @ResponseBody
     @DeleteMapping("/delete/{uuid}")
     fun deleteRecord(
@@ -132,8 +170,8 @@ class RecordService {
             message = "UUID must follow this pattern: ^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\$."
         )
         @PathVariable uuid: String,
-        @CookieValue("userName") userName: String,
-        @CookieValue("password") password: String
+        @CookieValue("userName") userName: String?,
+        @CookieValue("password") password: String?
     ): ResponseEntity<String?> {
         if (AuthenticationHandler.getInstance().isValidUser(userName, password)) {
             if (RecordHandler.getInstance().deleteRecord(uuid)) {
